@@ -3,17 +3,22 @@ package ua.edu.cdu.vu.process;
 import ua.edu.cdu.vu.resource.Resource;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Logger;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 public record Process(Resource resource1, Resource resource2) implements Runnable {
 
+    private static final Logger log = Logger.getLogger(Process.class.getName());
+
     @Override
     public void run() {
-        System.out.printf("%d - process started!%n", Thread.currentThread().getId());
+        log.info("%d - process started!%n".formatted(Thread.currentThread().getId()));
         while (!Thread.interrupted()) {
             if (resource1.acquire()) {
+                log.info("%d - resource1 acquired!%n".formatted(Thread.currentThread().getId()));
                 if (resource2.acquire()) {
+                    log.info("%d - resource2 acquired!%n".formatted(Thread.currentThread().getId()));
                     process();
                     resource2.release();
                     sleep();
@@ -24,9 +29,9 @@ public record Process(Resource resource1, Resource resource2) implements Runnabl
     }
 
     private void process() {
-        System.out.printf("%d - processing started!%n", Thread.currentThread().getId());
+        log.info("%d - processing started!%n".formatted(Thread.currentThread().getId()));
         sleep();
-        System.out.printf("%d - processing finished!%n", Thread.currentThread().getId());
+        log.info("%d - processing finished!%n".formatted(Thread.currentThread().getId()));
     }
 
     private void sleep() {
